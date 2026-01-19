@@ -55,7 +55,7 @@ export const navBarConfig: NavBarConfig = {
 export const profileConfig: ProfileConfig = {
   avatar: "assets/images/OIP.png",
   name: "Red Fox",
-  bio: "o captain, my captain.",
+  bio: " Ego in laqueum incidi.",
   links: [
     {
       name: "GitHub",

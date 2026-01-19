@@ -21,4 +21,4 @@ title: 关于
 
 <br>
 
-> o captain, my captain.
+> Ego in laqueum incidi.
