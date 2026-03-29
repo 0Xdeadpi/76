@@ -1,7 +1,7 @@
 ---
-title: ai小玩意
+title: ai工具制作 记录
 published: 2026-03-27
-description: 比较详细的过程记录
+description: 详细的过程记录
 tags: [AI]
 category: '小白学习'
 draft: false
