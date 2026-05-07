@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡普雷卡常数 6174 - 交互式探索</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 40px 20px;
+        }
+
+        .menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .menu-item {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .menu-item h3 {
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        input[type="number"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 15px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        button {
+            padding: 10px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .result {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .sequence {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .step {
+            background: #667eea;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .arrow {
+            font-size: 1.5em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .properties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .property-card {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .property-card:hover {
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .property-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .property-card p {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .formula {
+            background: #fff8e1;
+            border: 2px solid #fbc02d;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 30px 0;
+        }
+
+        .example-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .example-table th,
+        .example-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .example-table th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        .example-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .info-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .footer {
+            background: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .menu {
+                grid-template-columns: 1fr;
+            }
+
+            .sequence {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .properties-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✨ 卡普雷卡常数 6174</h1>
+            <p>一个神奇的数学常数的交互式探索</p>
+        </div>
+
+        <div class="content">
+            <!-- 菜单 -->
+            <div class="menu">
+                <div class="menu-item" onclick="showSection('properties')">
+                    <h3>📚 6174 的性质</h3>
+                    <p>了解这个常数的神奇特性</p>
+                </div>
+                <div class="menu-item" onclick="showSection('demo')">
+                    <h3>🎮 交互式演示</h3>
+                    <p>输入任意数字，查看它的变换过程</p>
+                </div>
+                <div class="menu-item" onclick="showSection('examples')">
+                    <h3>📖 有趣的例子</h3>
+                    <p>查看不同数字的演变过程</p>
+                </div>
+                <div class="menu-item" onclick="showSection('statistics')">
+                    <h3>📊 统计分析</h3>
+                    <p>所有4位数的收敛特性分析</p>
+                </div>
+            </div>
+
+            <!-- 1. 性质部分 -->
+            <div id="properties" class="section active">
+                <h2>6174 的性质</h2>
+                
+                <div class="properties-grid">
+                    <div class="property-card">
+                        <h3>🔄 自我迭代性</h3>
+                        <p>6174 具有特殊的自我迭代性质。将其数字按降序排列减去升序排列：</p>
+                        <div class="formula">7641 - 1467 = 6174</div>
+                        <p>无论应用多少次，6174 总是迭代到自己！</p>
+                    </div>
+
+                    <div class="property-card">
+                        <h3>🎯 吸引性</h3>
+                        <p>几乎所有的4位数都被"吸引"到6174：</p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>1234 → ... → 6174 (3步)</li>
+                            <li>5678 → ... → 6174 (3步)</li>
+                            <li>9998 → ... → 6174 (5步)</li>
+                        </ul>
+                    </div>
+
+                    <div class="property-card">
+                        <h3>⏱️ 有限步数</h3>
+                        <p>所有数字最多需要 <strong style="color: #667eea; font-size: 1.2em;">7 步</strong> 即可到达 6174。</p>
+                        <p style="margin-top: 10px;">大多数数字在 3-6 步内收敛。</p>
+                        <p style="margin-top: 10px;">例如: 1004, 1005, 1006 需要 7 步</p>
+                    </div>
+
+                    <div class="property-card">
+                        <h3>📜 历史背景</h3>
+                        <p><strong>发现者:</strong> D. R. Kaprekar (卡普雷卡)</p>
+                        <p><strong>发现时间:</strong> 1949 年</p>
+                        <p><strong>特性:</strong> 仅对 4 位数有效</p>
+                        <p style="margin-top: 10px; font-size: 0.9em;">这是数论和动力系统中的一个经典例子</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 交互演示部分 -->
+            <div id="demo" class="section">
+                <h2>🎮 交互式演示</h2>
+                
+                <div class="input-group">
+                    <input type="number" id="demoInput" placeholder="输入一个4位数 (1000-9999)" 
+                           min="1000" max="9999" value="3524">
+                    <button onclick="runDemo()">计算</button>
+                </div>
+
+                <div id="demoResult"></div>
+            </div>
+
+            <!-- 3. 有趣的例子 -->
+            <div id="examples" class="section">
+                <h2>📖 有趣的例子</h2>
+                
+                <table class="example-table">
+                    <thead>
+                        <tr>
+                            <th>起始数字</th>
+                            <th>演变过程</th>
+                            <th>步数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1234</td>
+                            <td>1234 → 3087 → 8352 → 6174</td>
+                            <td><strong>3 步</strong></td>
+                        </tr>
+                        <tr>
+                            <td>1000</td>
+                            <td>1000 → 999 → 8991 → 8082 → 8532 → 6174</td>
+                            <td><strong>5 步</strong></td>
+                        </tr>
+                        <tr>
+                            <td>2005</td>
+                            <td>2005 → 5175 → 5994 → 5355 → 1998 → 8082 → 8532 → 6174</td>
+                            <td><strong>7 步</strong></td>
+                        </tr>
+                        <tr>
+                            <td>3524</td>
+                            <td>3524 → 3087 → 8352 → 6174</td>
+                            <td><strong>3 步</strong></td>
+                        </tr>
+                        <tr>
+                            <td>9998</td>
+                            <td>9998 → 999 → 8991 → 8082 → 8532 → 6174</td>
+                            <td><strong>5 步</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box">
+                    <strong>💡 提示:</strong> 所有数字（除了所有位数相同的如1111、2222等）都会最终到达6174！
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ 例外:</strong> 当所有数字相同时（如1111、2222等），无法继续进行卡普雷卡程序，因为降序和升序排列相同，相减为0。
+                </div>
+            </div>
+
+            <!-- 4. 统计分析 -->
+            <div id="statistics" class="section">
+                <h2>📊 统计分析</h2>
+                
+                <p style="margin-bottom: 20px;">以下是所有 8999 个4位数（除了所有数字相同的）收敛到6174所需步数的分布：</p>
+                
+                <div class="chart-container">
+                    <canvas id="statsChart"></canvas>
+                </div>
+
+                <div class="info-box">
+                    <strong>📈 结论:</strong>
+                    <ul style="margin-top: 10px; margin-left: 20px;">
+                        <li>1步: 1 个数字 (6174本身)</li>
+                        <li>3步: 3285 个数字 (36.5%)</li>
+                        <li>4步: 1680 个数字 (18.7%)</li>
+                        <li>5步: 1575 个数字 (17.5%)</li>
+                        <li>6步: 1575 个数字 (17.5%)</li>
+                        <li>7步: 783 个数字 (8.7%)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🌟 卡普雷卡常数 6174 - 数学中的神奇常数</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">由 D. R. Kaprekar 在 1949 年发现</p>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // 隐藏所有部分
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // 显示选中的部分
+            document.getElementById(sectionId).classList.add('active');
+            
+            // 如果是统计部分，绘制图表
+            if (sectionId === 'statistics' && !window.chartDrawn) {
+                drawStatsChart();
+                window.chartDrawn = true;
+            }
+        }
+
+        function kaprekarStep(num) {
+            const digits = String(num).padStart(4, '0');
+            const descending = parseInt(Array.from(digits).sort((a, b) => b - a).join(''));
+            const ascending = parseInt(Array.from(digits).sort((a, b) => a - b).join(''));
+            return descending - ascending;
+        }
+
+        function runDemo() {
+            const input = parseInt(document.getElementById('demoInput').value);
+            
+            // 验证输入
+            if (!input || input < 1000 || input > 9999) {
+                document.getElementById('demoResult').innerHTML = 
+                    '<div class="warning-box">❌ 请输入1000-9999之间的数字</div>';
+                return;
+            }
+            
+            const digitSet = new Set(String(input).padStart(4, '0'));
+            if (digitSet.size === 1) {
+                document.getElementById('demoResult').innerHTML = 
+                    '<div class="warning-box">⚠️ 所有数字相同，无法进行卡普雷卡程序</div>';
+                return;
+            }
+            
+            // 计算序列
+            let sequence = [input];
+            let current = input;
+            
+            for (let i = 0; i < 10; i++) {
+                const next = kaprekarStep(current);
+                if (next === current) {
+                    sequence.push(next);
+                    break;
+                }
+                if (next === 6174) {
+                    sequence.push(next);
+                    break;
+                }
+                sequence.push(next);
+                current = next;
+            }
+            
+            // 显示结果
+            let html = '<div class="result">';
+            html += '<h3>✨ 卡普雷卡序列:</h3>';
+            html += '<div class="sequence">';
+            
+            sequence.forEach((num, index) => {
+                if (index > 0) html += '<div class="arrow">→</div>';
+                html += `<div class="step">${num}</div>`;
+            });
+            
+            html += '</div>';
+            html += `<p style="margin-top: 20px;"><strong>用时: ${sequence.length - 1} 步</strong></p>`;
+            
+            if (sequence[sequence.length - 1] === 6174) {
+                html += '<p style="color: #4caf50; font-weight: bold;">🎯 已到达卡普雷卡常数 6174!</p>';
+            }
+            
+            html += '</div>';
+            
+            document.getElementById('demoResult').innerHTML = html;
+        }
+
+        function drawStatsChart() {
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['1步', '3步', '4步', '5步', '6步', '7步'],
+                    datasets: [{
+                        label: '数字个数',
+                        data: [1, 3285, 1680, 1575, 1575, 783],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(153, 102, 255, 0.7)',
+                            'rgba(255, 159, 64, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)',
+                            'rgb(75, 192, 192)',
+                            'rgb(255, 206, 86)',
+                            'rgb(153, 102, 255)',
+                            'rgb(255, 159, 64)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: {
+                                font: { size: 12 }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                font: { size: 11 }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: { size: 11 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            runDemo();
+        });
+    </script>
+</body>
+</html>
